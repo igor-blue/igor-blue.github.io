@@ -6,7 +6,7 @@
 
 <p>The Intel platform is based on one or two chips. Small systems have one, the desktop and server ones are separated to a CPU complex and a PCH complex (PCH = Platform Controller Hub).</p>
 
-<p><img src="/images/images2020-4-19_14-3-0.png" alt="Intel architecture" /></p>
+<p><img src="/images/image2020-4-19_14-3-0.png" alt="Intel architecture" /></p>
 
 <p>The CPU complex deals with computation. It holds the "processor" cores, e.g. Sunny Cove that implement the ISA, as well as cross core caches like the L3 cache, and more controllers that are grouped together as "the system agent" or the "uncore". The uncore contains the memory controller and display, e.g. GPU and display controller.</p>
 
@@ -147,7 +147,7 @@ In DRTM, winload starts a new load verification chain using an Intel security fe
 SINIT measures additional secure-launch related stuff into PCR17 which includes the STM (if present), digest of Intel Early TXT code and matching elements of the Launch Control Policy (LCP). The LCP checks the platform is in a known-good state by checking PCRs 0-7, and that the OS is in a known-good state by checking PCRs 18-19.
 Next SINIT measures authorities involved up to now into PCR18 (the measurement is of the authority (e.g. the signer/key) and not the data to allow for upgrades).</p>
 
-<p><img src="/images/images2020-5-11_13-58-11.png" alt="DRTM flow" /></p>
+<p><img src="/images/images2020-5-11_13-58-11.png" alt="" /></p>
 
 <p>The OS now continues to load and use the PCRs for attestation telemetry.</p>
 

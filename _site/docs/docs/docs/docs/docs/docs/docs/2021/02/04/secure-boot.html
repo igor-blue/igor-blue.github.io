@@ -82,7 +82,7 @@ Before starting the main CSME kernel the RBE loads pre-OS modules. An example pr
 
 <p>The kernel starts by enabling several platform security features: SMEP, Supervisor Mode Access Prevention, prevents exploits from running mapped kernel memory from ring3, and DEP, Data Execution Prevention, which prevents exploits from running code from stack regions. It also generates per-process syscall table permissions, aswell as ACL and IPC permissions.</p>
 
-<h1 id="bring-up-bup">“Bring-Up” (BUP)</h1>
+<h1 id="bring-up-bup">Bring-Up (BUP)</h1>
 
 <p>Once everything is ready the kernel loads the Process Manager which executed “IBL processes”, which includes Bring-Up (BUP) and the Loader. The BUP loads virtual file system, or VFS server, parses the init script of the FTPR partition and loads all IBL modules listed there. This includes: the Event Dispatcher Server (eventdisp) - service that allows publishing, registering and acknowledging receipt of named events (sort of DBUS), the Bus Driver (busdrv) - a driver that permits other drivers to access devices on the CSME’s internal bus, the RTC driver (prtc), the Crypto/DMA driver (crypto) - provices access to services offered by the OCS hardware (SKS, DMA engines), the Storage driver (storage) - which provides access to the MFS filesystem, the Fuse driver (fpf) and finally the Loader Server (loadmgr).</p>
 

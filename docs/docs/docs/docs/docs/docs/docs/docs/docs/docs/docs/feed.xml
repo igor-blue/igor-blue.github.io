@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://igor-blue.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://igor-blue.github.io/" rel="alternate" type="text/html" /><updated>2021-02-03T04:29:36-05:00</updated><id>https://igor-blue.github.io/feed.xml</id><title type="html">Igor’s Blog</title><subtitle>I write about my blue team experiences and my hobby researching hardware security.</subtitle><entry><title type="html">Starting a blog at this time</title><link href="https://igor-blue.github.io/2021/02/01/intro.html" rel="alternate" type="text/html" title="Starting a blog at this time" /><published>2021-02-01T00:00:00-05:00</published><updated>2021-02-01T00:00:00-05:00</updated><id>https://igor-blue.github.io/2021/02/01/intro</id><content type="html" xml:base="https://igor-blue.github.io/2021/02/01/intro.html">&lt;h1 id=&quot;is-this-a-good-time-to-start-a-new-cyber-security-blog&quot;&gt;Is this a good time to start a new cyber security blog?&lt;/h1&gt;
+
+&lt;p&gt;I have been working in cybersecurity for quite some time, but have always been afraid of writing publicly about my work: afraid of being publicly rediculed for my work, afraid of my english proficiency and afraid in general.&lt;/p&gt;
+
+&lt;p&gt;When I finally got the curage to start the North Korean blog thing happened, litterally a half hour before starting, throwing me way down.&lt;/p&gt;
+
+&lt;p&gt;But finally I decided to go anyway.&lt;/p&gt;
+
+&lt;p&gt;I’ll be posting a lot of my backlog in the next few weeks, including: the Intel PC boot process, intel uCode stuff, expereicnes as a blue teamer.&lt;/p&gt;
+
+&lt;p&gt;Lets hope someone somewhere ever reads these words.&lt;/p&gt;
+
+&lt;p&gt;Too-doo-loo,
+Igor&lt;/p&gt;</content><author><name></name></author><summary type="html">Is this a good time to start a new cyber security blog?</summary></entry></feed>

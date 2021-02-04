@@ -14,7 +14,7 @@
 
 <p>An additional part of the PCH is a very important player in our story, the CSME, or Converged Security &amp; Management Engine, a i486 IP block (also called Minute IA). CSME is responsibly for much of the security model of Intel processors as well as many of the manageability features of the platform. The CSME block has its own dedicated ~1.5mb of SRAM memory and 128KB of ROM, as well as a dedicated IOMMU, called the A-Unit (that even has its own <em>acode</em> microcode) located in the CSME's <em>uncore</em>', thats allows access from ME to the main memory, as well as DMA to/from the main memory and using the main memory as an encrypted paging area ("virtual memory"). The CSME engine runs a customized version of the Minix3 microkernel, also recent versions have changed it beyond recognition adding many security features.</p>
 
-<p><img src="/images/images2020-4-19_14-14-4.png" alt="CSME structure" /></p>
+<p><img src="/images/image2020-4-19_14-14-4.png" alt="CSME structure" /></p>
 
 <h2 id="buses">Buses</h2>
 <p>Lets use this post to also introduce the main interconnects in the system. The main externally facing interconnect bus is PCI-E, a fast bust that can reach 64GBps in its latest incarnations. A second external bus is the LPC, or Low Pin Count bus, a slow bus for connecting devices such as SPI flash, the TPM (explained below), and old peripherals such as PS/2 touchpads.</p>
@@ -25,7 +25,7 @@ There are two IOSF busses in the PCH - the Primary Fabric and the Sideband Fabri
 <h2 id="more-components">More Components</h2>
 <p>Another interesting component is the <strong>ITH</strong>, or Intel Trace Hub, which is codenamed North Peak (NPK). The ITH can trace different internal hardware component (VIA - Visualization of Internal Signals, ODLA - On-chip logic analyzer, SoCHAP - SOC performance counters, IPT - Intel Process Trace, AET - Intel Architecture Trace), and external component like CSME, the UEFI firmware, and you can even connect it to ETW. This telemetry eventually finds its way to Intel in various methods.</p>
 
-<p><img src="/images/images2020-4-22_0-52-2.png" alt="Intel Trace Hub" /></p>
+<p><img src="/images/image2020-4-22_0-52-2.png" alt="Intel Trace Hub" /></p>
 
 <p>The <strong>TPM</strong> is designed to provide a tamper proof environment to enforce system security through hardware. It implements in hardware many essential functions: sha1 &amp; sha256 hashing algorithms, many crypto and key derivation functions, measurment registers call the Platform Configuration Registers (PCRs), a secret key - Endorsment Key - used to derive all other keys, and non-volatile storage slots for storing keys and hashes. Discrete TPM chips (i.e. those that are a separate chip on the mainboard or SOC and connected through the LPC) are call dTPMs, or can be implemented in the CSME module's firmware and called fTPMs.</p>
 
@@ -35,12 +35,12 @@ PCRs 17-22 are for "dynamic" use - they get reset on each secure launch (GETSEC[
 <h2 id="the-flash-chip">The Flash Chip</h2>
 <p>SPI flash has 5 major regions: the Descriptor regions, the CSME region, the Gigabit Ethernet Region, the Platform Data Region, and the UEFI region. In the image below you can see an example of how the flash is organized.</p>
 
-<p><img src="/images/images2019-11-11_1-18-53.png" alt="Partition regions in SPI flash" />
-<img src="/images/images2019-11-11_1-19-12.png" alt="Serial flash sizes" /></p>
+<p><img src="/images/image2019-11-11_1-18-53.png" alt="Partition regions in SPI flash" />
+<img src="/images/image2019-11-11_1-19-12.png" alt="Serial flash sizes" /></p>
 
 <p>Later versions added more regions:</p>
 
-<p><img src="/images/images2019-11-25_22-49-41.png" alt="SPI region evolution" /></p>
+<p><img src="/images/image2019-11-25_22-49-41.png" alt="SPI region evolution" /></p>
 
 <p>These regions are categorized as fault tolerant (FTPs) and non fault tolerant partitions (NFTPs).
 Fault tolerant partitions are critical for boot, and verified during early boot (like the RBE, the CSME ROM Boot extensions will discuss in a few paragraphs). If verification fails - the system does not boot. Examples of non fault tolerant partitions are the Integrated Sensor Hub (or ISH) firmware.</p>
@@ -64,7 +64,7 @@ The CSME region can usually be updated only from within the CSME. However, for m
 
 <h1 id="overview">Overview</h1>
 <p>In the next sections we'll look over all the stages of boot.
-<img src="/images/images2020-4-20_14-56-23.png" alt="Serial flash sizes" /></p>
+<img src="/images/image2020-4-20_14-56-23.png" alt="Serial flash sizes" /></p>
 
 <h1 id="early-power-on">Early power on</h1>
 <p>Boot starts the PMC, the Power Management Controller.
@@ -96,7 +96,7 @@ This begins the Static Root Of Trust Model (SRTM), where CSME ROM verifies the C
 The ACM also initializes TXT, the Dynamic Root of Trust Model (DRTM) which we will detail in a few paragraphs.</p>
 
 <h1 id="uefi-initialization">UEFI initialization</h1>
-<p><img src="/images/images2019-11-20_15-11-32.png" alt="UEFI Initialization stages" /></p>
+<p><img src="/images/image2019-11-20_15-11-32.png" alt="UEFI Initialization stages" /></p>
 
 <p>Once the CPU completes initialization, the Initial Boot Block (IBB) of the UEFI firmware is executed.
 The startup ACM authenticates parts of the FIT and the IBB using the OEM key burned into the fuses, authenticates it and measures it into PCR0 in the TPM. PCR0 is also referred to as the CRTM (Core Root of Trust Measurement)</p>
@@ -114,7 +114,7 @@ Boot Services are used by the operating system only during boot and discarded th
 
 <p>Finally the UEFI firmware measures the platform (e.g. chipset) security configuration (NV variables) into PCR1 and then locks them by calling a function in the ACM.</p>
 
-<p><img src="/images/images2019-11-27_12-24-21.png" alt="UEFI boot stages" /></p>
+<p><img src="/images/image2019-11-27_12-24-21.png" alt="UEFI boot stages" /></p>
 
 <h2 id="loading-the-boot-loader">Loading the boot loader</h2>
 <p>The final driver to be loaded by DXE is the Bood Device Selection module or BDS. BDS scans its stored configuration, comparing it with the currently available hardware and decides on a boot device. This gets executed in legacy boot and non secureboot systems.
@@ -147,7 +147,7 @@ In DRTM, winload starts a new load verification chain using an Intel security fe
 SINIT measures additional secure-launch related stuff into PCR17 which includes the STM (if present), digest of Intel Early TXT code and matching elements of the Launch Control Policy (LCP). The LCP checks the platform is in a known-good state by checking PCRs 0-7, and that the OS is in a known-good state by checking PCRs 18-19.
 Next SINIT measures authorities involved up to now into PCR18 (the measurement is of the authority (e.g. the signer/key) and not the data to allow for upgrades).</p>
 
-<p><img src="/images/images2020-5-11_13-58-11.png" alt="" /></p>
+<p><img src="/images/image2020-5-11_13-58-11.png" alt="" /></p>
 
 <p>The OS now continues to load and use the PCRs for attestation telemetry.</p>
 

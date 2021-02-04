@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://igor-blue.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://igor-blue.github.io/" rel="alternate" type="text/html" /><updated>2021-02-04T04:43:34-05:00</updated><id>https://igor-blue.github.io/feed.xml</id><title type="html">Igor’s Blog</title><subtitle>I write about my blue team experiences and my hobby researching hardware security.</subtitle><entry><title type="html">Secure Boot</title><link href="https://igor-blue.github.io/2021/02/04/secure-boot.html" rel="alternate" type="text/html" title="Secure Boot" /><published>2021-02-04T00:00:00-05:00</published><updated>2021-02-04T00:00:00-05:00</updated><id>https://igor-blue.github.io/2021/02/04/secure-boot</id><content type="html" xml:base="https://igor-blue.github.io/2021/02/04/secure-boot.html">&lt;p&gt;This blog post is an in-depth dive into the security features of the Intel/Windows platform boot process. In this post I'll explain the startup process through security focused lenses, next post we'll dive into several known attacks and how there were handled by Intel and Microsoft. My wish is to explain to technology professionals not deep into platform security why Microsoft's SecureCore is so important and necessary.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://igor-blue.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://igor-blue.github.io/" rel="alternate" type="text/html" /><updated>2021-02-04T04:44:15-05:00</updated><id>https://igor-blue.github.io/feed.xml</id><title type="html">Igor’s Blog</title><subtitle>I write about my blue team experiences and my hobby researching hardware security.</subtitle><entry><title type="html">Secure Boot</title><link href="https://igor-blue.github.io/2021/02/04/secure-boot.html" rel="alternate" type="text/html" title="Secure Boot" /><published>2021-02-04T00:00:00-05:00</published><updated>2021-02-04T00:00:00-05:00</updated><id>https://igor-blue.github.io/2021/02/04/secure-boot</id><content type="html" xml:base="https://igor-blue.github.io/2021/02/04/secure-boot.html">&lt;p&gt;This blog post is an in-depth dive into the security features of the Intel/Windows platform boot process. In this post I'll explain the startup process through security focused lenses, next post we'll dive into several known attacks and how there were handled by Intel and Microsoft. My wish is to explain to technology professionals not deep into platform security why Microsoft's SecureCore is so important and necessary.&lt;/p&gt;
 
 &lt;h1 id=&quot;introduction-and-system-architecture&quot;&gt;Introduction and System Architecture&lt;/h1&gt;
 
@@ -14,7 +14,7 @@
 
 &lt;p&gt;An additional part of the PCH is a very important player in our story, the CSME, or Converged Security &amp;amp; Management Engine, a i486 IP block (also called Minute IA). CSME is responsibly for much of the security model of Intel processors as well as many of the manageability features of the platform. The CSME block has its own dedicated ~1.5mb of SRAM memory and 128KB of ROM, as well as a dedicated IOMMU, called the A-Unit (that even has its own &lt;em&gt;acode&lt;/em&gt; microcode) located in the CSME's &lt;em&gt;uncore&lt;/em&gt;', thats allows access from ME to the main memory, as well as DMA to/from the main memory and using the main memory as an encrypted paging area (&quot;virtual memory&quot;). The CSME engine runs a customized version of the Minix3 microkernel, also recent versions have changed it beyond recognition adding many security features.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/images/images2020-4-19_14-14-4.png&quot; alt=&quot;CSME structure&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/image2020-4-19_14-14-4.png&quot; alt=&quot;CSME structure&quot; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;buses&quot;&gt;Buses&lt;/h2&gt;
 &lt;p&gt;Lets use this post to also introduce the main interconnects in the system. The main externally facing interconnect bus is PCI-E, a fast bust that can reach 64GBps in its latest incarnations. A second external bus is the LPC, or Low Pin Count bus, a slow bus for connecting devices such as SPI flash, the TPM (explained below), and old peripherals such as PS/2 touchpads.&lt;/p&gt;
@@ -25,7 +25,7 @@ There are two IOSF busses in the PCH - the Primary Fabric and the Sideband Fabri
 &lt;h2 id=&quot;more-components&quot;&gt;More Components&lt;/h2&gt;
 &lt;p&gt;Another interesting component is the &lt;strong&gt;ITH&lt;/strong&gt;, or Intel Trace Hub, which is codenamed North Peak (NPK). The ITH can trace different internal hardware component (VIA - Visualization of Internal Signals, ODLA - On-chip logic analyzer, SoCHAP - SOC performance counters, IPT - Intel Process Trace, AET - Intel Architecture Trace), and external component like CSME, the UEFI firmware, and you can even connect it to ETW. This telemetry eventually finds its way to Intel in various methods.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/images/images2020-4-22_0-52-2.png&quot; alt=&quot;Intel Trace Hub&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/image2020-4-22_0-52-2.png&quot; alt=&quot;Intel Trace Hub&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;The &lt;strong&gt;TPM&lt;/strong&gt; is designed to provide a tamper proof environment to enforce system security through hardware. It implements in hardware many essential functions: sha1 &amp;amp; sha256 hashing algorithms, many crypto and key derivation functions, measurment registers call the Platform Configuration Registers (PCRs), a secret key - Endorsment Key - used to derive all other keys, and non-volatile storage slots for storing keys and hashes. Discrete TPM chips (i.e. those that are a separate chip on the mainboard or SOC and connected through the LPC) are call dTPMs, or can be implemented in the CSME module's firmware and called fTPMs.&lt;/p&gt;
 
@@ -35,12 +35,12 @@ PCRs 17-22 are for &quot;dynamic&quot; use - they get reset on each secure launc
 &lt;h2 id=&quot;the-flash-chip&quot;&gt;The Flash Chip&lt;/h2&gt;
 &lt;p&gt;SPI flash has 5 major regions: the Descriptor regions, the CSME region, the Gigabit Ethernet Region, the Platform Data Region, and the UEFI region. In the image below you can see an example of how the flash is organized.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/images/images2019-11-11_1-18-53.png&quot; alt=&quot;Partition regions in SPI flash&quot; /&gt;
-&lt;img src=&quot;/images/images2019-11-11_1-19-12.png&quot; alt=&quot;Serial flash sizes&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/image2019-11-11_1-18-53.png&quot; alt=&quot;Partition regions in SPI flash&quot; /&gt;
+&lt;img src=&quot;/images/image2019-11-11_1-19-12.png&quot; alt=&quot;Serial flash sizes&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Later versions added more regions:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/images/images2019-11-25_22-49-41.png&quot; alt=&quot;SPI region evolution&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/image2019-11-25_22-49-41.png&quot; alt=&quot;SPI region evolution&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;These regions are categorized as fault tolerant (FTPs) and non fault tolerant partitions (NFTPs).
 Fault tolerant partitions are critical for boot, and verified during early boot (like the RBE, the CSME ROM Boot extensions will discuss in a few paragraphs). If verification fails - the system does not boot. Examples of non fault tolerant partitions are the Integrated Sensor Hub (or ISH) firmware.&lt;/p&gt;
@@ -64,7 +64,7 @@ The CSME region can usually be updated only from within the CSME. However, for m
 
 &lt;h1 id=&quot;overview&quot;&gt;Overview&lt;/h1&gt;
 &lt;p&gt;In the next sections we'll look over all the stages of boot.
-&lt;img src=&quot;/images/images2020-4-20_14-56-23.png&quot; alt=&quot;Serial flash sizes&quot; /&gt;&lt;/p&gt;
+&lt;img src=&quot;/images/image2020-4-20_14-56-23.png&quot; alt=&quot;Serial flash sizes&quot; /&gt;&lt;/p&gt;
 
 &lt;h1 id=&quot;early-power-on&quot;&gt;Early power on&lt;/h1&gt;
 &lt;p&gt;Boot starts the PMC, the Power Management Controller.
@@ -96,7 +96,7 @@ This begins the Static Root Of Trust Model (SRTM), where CSME ROM verifies the C
 The ACM also initializes TXT, the Dynamic Root of Trust Model (DRTM) which we will detail in a few paragraphs.&lt;/p&gt;
 
 &lt;h1 id=&quot;uefi-initialization&quot;&gt;UEFI initialization&lt;/h1&gt;
-&lt;p&gt;&lt;img src=&quot;/images/images2019-11-20_15-11-32.png&quot; alt=&quot;UEFI Initialization stages&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/image2019-11-20_15-11-32.png&quot; alt=&quot;UEFI Initialization stages&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Once the CPU completes initialization, the Initial Boot Block (IBB) of the UEFI firmware is executed.
 The startup ACM authenticates parts of the FIT and the IBB using the OEM key burned into the fuses, authenticates it and measures it into PCR0 in the TPM. PCR0 is also referred to as the CRTM (Core Root of Trust Measurement)&lt;/p&gt;
@@ -114,7 +114,7 @@ Boot Services are used by the operating system only during boot and discarded th
 
 &lt;p&gt;Finally the UEFI firmware measures the platform (e.g. chipset) security configuration (NV variables) into PCR1 and then locks them by calling a function in the ACM.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/images/images2019-11-27_12-24-21.png&quot; alt=&quot;UEFI boot stages&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/image2019-11-27_12-24-21.png&quot; alt=&quot;UEFI boot stages&quot; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;loading-the-boot-loader&quot;&gt;Loading the boot loader&lt;/h2&gt;
 &lt;p&gt;The final driver to be loaded by DXE is the Bood Device Selection module or BDS. BDS scans its stored configuration, comparing it with the currently available hardware and decides on a boot device. This gets executed in legacy boot and non secureboot systems.
@@ -147,7 +147,7 @@ In DRTM, winload starts a new load verification chain using an Intel security fe
 SINIT measures additional secure-launch related stuff into PCR17 which includes the STM (if present), digest of Intel Early TXT code and matching elements of the Launch Control Policy (LCP). The LCP checks the platform is in a known-good state by checking PCRs 0-7, and that the OS is in a known-good state by checking PCRs 18-19.
 Next SINIT measures authorities involved up to now into PCR18 (the measurement is of the authority (e.g. the signer/key) and not the data to allow for upgrades).&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/images/images2020-5-11_13-58-11.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/image2020-5-11_13-58-11.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;The OS now continues to load and use the PCRs for attestation telemetry.&lt;/p&gt;
 
