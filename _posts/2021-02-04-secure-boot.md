@@ -3,6 +3,9 @@ layout: post
 title:  "In-depth dive into the security features of the Intel/Windows platform secure boot process"
 ---
 
+* Do not remove this line (it will not be displayed)
+{:toc}
+
 This blog post is an in-depth dive into the security features of the Intel/Windows platform boot process. In this post I\'ll explain the startup process through security focused lenses, next post we\'ll dive into several known attacks and how there were handled by Intel and Microsoft. My wish is to explain to technology professionals not deep into platform security why Microsoft\'s SecureCore is so important and necessary.
 
 # Introduction and System Architecture

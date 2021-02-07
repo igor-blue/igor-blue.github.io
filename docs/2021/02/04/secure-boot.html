@@ -12,7 +12,7 @@
     
   </title>
 
-  <meta name="description" content="This blog post is an in-depth dive into the security features of the Intel/Windows platform boot process. In this post I&#39;ll explain the startup process throu...">
+  <meta name="description" content="Introduction and System Architecture Buses More Components The Flash Chip Overview Early power on Bring-Up (BUP) CPU initialization UEFI initialization Loadi...">
 
   <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
   <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
@@ -68,7 +68,7 @@
               <a href="#"></a>
               on February 04, 2021 &middot; <span class="reading-time" title="Estimated read time">
   
-   33 mins  read </span>
+   34 mins  read </span>
 
             </span>
           </div>
@@ -81,7 +81,39 @@
     <div class="row">
       <div class="col-lg-8 col-md-10 mx-auto">
 
-        <p>This blog post is an in-depth dive into the security features of the Intel/Windows platform boot process. In this post I'll explain the startup process through security focused lenses, next post we'll dive into several known attacks and how there were handled by Intel and Microsoft. My wish is to explain to technology professionals not deep into platform security why Microsoft's SecureCore is so important and necessary.</p>
+        <ul id="markdown-toc">
+  <li><a href="#introduction-and-system-architecture" id="markdown-toc-introduction-and-system-architecture">Introduction and System Architecture</a>    <ul>
+      <li><a href="#buses" id="markdown-toc-buses">Buses</a></li>
+      <li><a href="#more-components" id="markdown-toc-more-components">More Components</a></li>
+      <li><a href="#the-flash-chip" id="markdown-toc-the-flash-chip">The Flash Chip</a></li>
+    </ul>
+  </li>
+  <li><a href="#overview" id="markdown-toc-overview">Overview</a></li>
+  <li><a href="#early-power-on" id="markdown-toc-early-power-on">Early power on</a></li>
+  <li><a href="#bring-up-bup" id="markdown-toc-bring-up-bup">Bring-Up (BUP)</a></li>
+  <li><a href="#cpu-initialization" id="markdown-toc-cpu-initialization">CPU initialization</a></li>
+  <li><a href="#uefi-initialization" id="markdown-toc-uefi-initialization">UEFI initialization</a>    <ul>
+      <li><a href="#loading-the-boot-loader" id="markdown-toc-loading-the-boot-loader">Loading the boot loader</a></li>
+    </ul>
+  </li>
+  <li><a href="#windows-boot" id="markdown-toc-windows-boot">Windows Boot</a>    <ul>
+      <li><a href="#winload" id="markdown-toc-winload">Winload</a></li>
+      <li><a href="#hvci" id="markdown-toc-hvci">HVCI</a></li>
+      <li><a href="#dynamic-root-of-trust-model-drtm" id="markdown-toc-dynamic-root-of-trust-model-drtm">Dynamic Root of Trust Model (DRTM)</a></li>
+      <li><a href="#uefi-memory-attributes-table" id="markdown-toc-uefi-memory-attributes-table">UEFI Memory Attributes Table</a></li>
+    </ul>
+  </li>
+  <li><a href="#other-oss" id="markdown-toc-other-oss">Other OSs</a></li>
+  <li><a href="#more-protections" id="markdown-toc-more-protections">More Protections</a>    <ul>
+      <li><a href="#iommu-and-dma-protections" id="markdown-toc-iommu-and-dma-protections">IOMMU and DMA protections</a></li>
+      <li><a href="#secure-devices" id="markdown-toc-secure-devices">Secure Devices</a></li>
+      <li><a href="#smm" id="markdown-toc-smm">SMM</a></li>
+      <li><a href="#memory-reset-protections" id="markdown-toc-memory-reset-protections">Memory Reset protections</a></li>
+    </ul>
+  </li>
+</ul>
+
+<p>This blog post is an in-depth dive into the security features of the Intel/Windows platform boot process. In this post I'll explain the startup process through security focused lenses, next post we'll dive into several known attacks and how there were handled by Intel and Microsoft. My wish is to explain to technology professionals not deep into platform security why Microsoft's SecureCore is so important and necessary.</p>
 
 <h1 id="introduction-and-system-architecture">Introduction and System Architecture</h1>
 
