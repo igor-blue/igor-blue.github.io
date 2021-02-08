@@ -29,7 +29,7 @@ github_username:  igor-blue
 
 # Build settings
 #theme: minima
-theme: jekyll-theme-clean-blog
+theme: minimal-mistakes-jekyll
 plugins:
   - jekyll-feed
 
@@ -52,3 +52,13 @@ plugins:
 #   - vendor/cache/
 #   - vendor/gems/
 #   - vendor/ruby/
+
+minimal_mistakes_skin: mint
+defaults:
+  # _posts
+  - scope:
+      path: ""
+      type: posts
+    values:
+      read_time: true
+

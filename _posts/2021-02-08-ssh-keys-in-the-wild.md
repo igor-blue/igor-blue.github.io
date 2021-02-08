@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: single
 title:  "Analysis of SSH keys found in the wild"
 ---
 

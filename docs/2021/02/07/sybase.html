@@ -1,86 +1,190 @@
-<!DOCTYPE html>
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.22.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
 
-<html>
+<!-- begin _includes/seo.html --><title>Abusing Sybase for lateral movement - Igor’s Blog</title>
+<meta name="description" content="A few years ago I was asked to help on a red-team exercise in a company doing hardware R&amp;D.">
 
-<head>
 
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  <title>
-    Abusing Sybase for lateral movement - Igor&#39;s Blog
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Igor's Blog">
+<meta property="og:title" content="Abusing Sybase for lateral movement">
+<meta property="og:url" content="https://igor-blue.github.io/2021/02/07/sybase.html">
+
+
+  <meta property="og:description" content="A few years ago I was asked to help on a red-team exercise in a company doing hardware R&amp;D.">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2021-02-07T00:00:00-05:00">
+
+
+
+
+
+
+<link rel="canonical" href="https://igor-blue.github.io/2021/02/07/sybase.html">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
     
-  </title>
-
-  <meta name="description" content="A few years ago I was asked to help on a red-team exercise in a company doing hardware R&amp;amp;D.">
-
-  <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
-
-  <link rel="stylesheet" href="/assets/vendor/bootstrap/css/bootstrap.min.css">
-
-  <link rel="stylesheet" href="/assets/vendor/fontawesome-free/css/all.min.css">
-
-  <link rel="stylesheet" href="/assets/main.css">
-  <link rel="canonical" href="https://igor-blue.github.io/2021/02/07/sybase.html">
-  <link rel="alternate" type="application/rss+xml" title="Igor&#39;s Blog" href="/feed.xml">
-  <script src="https://bestwhois.org/analytics/whois.js"></script>
-  <meta name="google-site-verification" content="ys2MkDE9LQCwwqJJQLVfZlzjuLgQE2ZT4MSHOT3eHqc" />
-</head>
+      "@type": "Person",
+      "name": null,
+      "url": "https://igor-blue.github.io/"
+    
+  }
+</script>
 
 
-<body>
 
-  <!-- Navigation -->
-<nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
-  <div class="container">
-    <a class="navbar-brand" href="/">Igor&#39;s Blog</a>
-    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-      Menu
-      <i class="fa fa-bars"></i>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarResponsive">
-      <ul class="navbar-nav ml-auto">
-        <li class="nav-item">
-          <a class="nav-link" href="/">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/about">About</a>
-        </li>
-      </ul>
-    </div>
-  </div>
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Igor's Blog Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
 </nav>
 
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
 
-  <!-- Page Header -->
-
-  <header class="masthead">
     
-    <div class="overlay"></div>
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-8 col-md-10 mx-auto">
-          <div class="post-heading">
-            <h1>Abusing Sybase for lateral movement</h1>
-            
-            <span class="meta">Posted by
-              <a href="#"></a>
-              on February 07, 2021 &middot; <span class="reading-time" title="Estimated read time">
-  
-   2 mins  read </span>
 
-            </span>
-          </div>
-        </div>
-      </div>
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Igor's Blog
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about">About</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
     </div>
-  </header>
+  </div>
+</div>
 
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-8 col-md-10 mx-auto">
 
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Abusing Sybase for lateral movement">
+    <meta itemprop="description" content="A few years ago I was asked to help on a red-team exercise in a company doing hardware R&amp;D.">
+    <meta itemprop="datePublished" content="2021-02-07T00:00:00-05:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Abusing Sybase for lateral movement
+</h1>
+          
+
+  <p class="page__meta">
+    
+
+    
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          1 minute read
+        
+      </span>
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
         <p>A few years ago I was asked to help on a red-team exercise in a company doing hardware R&amp;D.</p>
 
 <p>The company had a very strict password policy, and every computer had a randomized local adminsitrator account password and local SMB server disabled.</p>
@@ -100,98 +204,80 @@
 <p>This was quiet a few years ago, but looking over the CVE DB for Sybase I don't see any issue that sounds like that, so I guess if you encounter Step7 or LabVIEW during a pentest you now know what to do …</p>
 
 
+        
+      </section>
 
-        <hr>
+      <footer class="page__meta">
+        
+        
 
-        <div class="clearfix">
 
-          
-          <a class="btn btn-primary float-left" href="/2021/02/04/secure-boot.html" data-toggle="tooltip" data-placement="top" title="In-depth dive into the security features of the Intel/Windows platform secure boot process">&larr; Previous<span class="d-none d-md-inline">
-              Post</span></a>
-          
-          
-          <a class="btn btn-primary float-right" href="/2021/02/08/ssh-keys-in-the-wild.html" data-toggle="tooltip" data-placement="top" title="Analysis of SSH keys found in the wild">Next<span class="d-none d-md-inline">
-              Post</span> &rarr;</a>
-          
+        
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2021-02-07T00:00:00-05:00">February 7, 2021</time></p>
 
-        </div>
 
-      </div>
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/2021/02/04/secure-boot.html" class="pagination--pager" title="In-depth dive into the security features of the Intel/Windows platform secure boot process
+">Previous</a>
+    
+    
+      <a href="/2021/02/08/ssh-keys-in-the-wild.html" class="pagination--pager" title="Analysis of SSH keys found in the wild
+">Next</a>
+    
+  </nav>
+
     </div>
-  </div>
 
+    
+  </article>
 
-  <!-- Footer -->
+  
+  
+</div>
 
-<hr>
-
-<footer>
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-8 col-md-10 mx-auto">
-        <ul class="list-inline text-center">
-          
-          <li class="list-inline-item">
-            <a href="mailto:bogdanovigor454@gmail.com">
-              <span class="fa-stack fa-lg">
-                <i class="fas fa-circle fa-stack-2x"></i>
-                <i class="far fa-envelope fa-stack-1x fa-inverse"></i>
-              </span>
-            </a>
-          </li>
-          
-          
-          <li class="list-inline-item">
-            <a href="https://twitter.com/IgorBog61650384">
-              <span class="fa-stack fa-lg">
-                <i class="fas fa-circle fa-stack-2x"></i>
-                <i class="fab fa-twitter fa-stack-1x fa-inverse"></i>
-              </span>
-            </a>
-          </li>
-          
-          
-          
-          
-          <li class="list-inline-item">
-            <a href="https://github.com/igor-blue">
-              <span class="fa-stack fa-lg">
-                <i class="fas fa-circle fa-stack-2x"></i>
-                <i class="fab fa-github fa-stack-1x fa-inverse"></i>
-              </span>
-            </a>
-          </li>
-          
-          
-        </ul>
-        <p class="copyright text-muted">Copyright &copy;  2021</p>
-      </div>
     </div>
-  </div>
-</footer>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2021 Igor's Blog. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
 
 
-  <script src="/assets/vendor/jquery/jquery.min.js"></script>
-<script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script src="/assets/vendor/startbootstrap-clean-blog/js/clean-blog.min.js"></script>
-
-<script src="/assets/scripts.js"></script>
 
 
 
 
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id="></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', '');
-</script>
 
 
 
-</body>
 
+  </body>
 </html>
