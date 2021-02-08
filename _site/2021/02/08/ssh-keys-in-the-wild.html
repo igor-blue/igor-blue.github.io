@@ -8,11 +8,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
   <title>
-    Abusing Sybase for lateral movement - Igor&#39;s Blog
+    Analysis of SSH keys found in the wild - Igor&#39;s Blog
     
   </title>
 
-  <meta name="description" content="A few years ago I was asked to help on a red-team exercise in a company doing hardware R&amp;amp;D.">
+  <meta name="description" content="In 2018 I was contracted to help a large organization with a very distributed and remote structure. One of the things that I found was that the organization ...">
 
   <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
   <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="/assets/vendor/fontawesome-free/css/all.min.css">
 
   <link rel="stylesheet" href="/assets/main.css">
-  <link rel="canonical" href="https://igor-blue.github.io/2021/02/07/sybase.html">
+  <link rel="canonical" href="https://igor-blue.github.io/2021/02/08/ssh-keys-in-the-wild.html">
   <link rel="alternate" type="application/rss+xml" title="Igor&#39;s Blog" href="/feed.xml">
   <script src="https://bestwhois.org/analytics/whois.js"></script>
   <meta name="google-site-verification" content="ys2MkDE9LQCwwqJJQLVfZlzjuLgQE2ZT4MSHOT3eHqc" />
@@ -62,13 +62,13 @@
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
           <div class="post-heading">
-            <h1>Abusing Sybase for lateral movement</h1>
+            <h1>Analysis of SSH keys found in the wild</h1>
             
             <span class="meta">Posted by
               <a href="#"></a>
-              on February 07, 2021 &middot; <span class="reading-time" title="Estimated read time">
+              on February 08, 2021 &middot; <span class="reading-time" title="Estimated read time">
   
-   2 mins  read </span>
+   3 mins  read </span>
 
             </span>
           </div>
@@ -81,23 +81,73 @@
     <div class="row">
       <div class="col-lg-8 col-md-10 mx-auto">
 
-        <p>A few years ago I was asked to help on a red-team exercise in a company doing hardware R&amp;D.</p>
+        <p>In 2018 I was contracted to help a large organization with a very distributed and remote structure. One of the things that I found was that the organization does not have a strict policy regarding the creation, storage and lifecycle of SSH keys.</p>
 
-<p>The company had a very strict password policy, and every computer had a randomized local adminsitrator account password and local SMB server disabled.</p>
+<p>I decided to look into this issue in general, so in Feb 2019 wrote a crawler that looked for SSH keys around the web - public repos, s3 bucket with bad permissions, data dumps from companies and so on.</p>
 
-<p>We managed to gain access to one developer but got stuck there. We did find one thing though: many of the developers had Sybase Adaptive SQL server installed on their systems as it was bundled by default with LabVIEW and Siemens Step 7, both in use by the target.</p>
+<p>From this I got 4807 keys. Next I wrote a small python script that tried the SSH keys - just autenticate and close the connection, without opening any channels as to not actually access the target systems which would be illegal.</p>
 
-<p>I installed LabVIEW and tried accessing it through the Adaptive SQL client. Looking through the connect dialog I notice something interesting: one of the options was "Start and connect to a database on another computer":</p>
+<p>I managed to authenticate into 221 hosts, 5 were FreeBSD, 1 was MacOS, 3 were Linux on ARM64, and the rest were Linux x64. This means I have 221 working keys found on the web and no way to notify their owners they should change their keys.</p>
 
-<p><img src="/images/sybase2.png" alt="Sybase connect dialog" /></p>
+<p>General interesting statistics:</p>
 
-<p>When selecting this option you need to specify the DB filename. I tried specifying an SMB server and could and pressed "Connnect". Amazingly, the target computer connected back over an SMB null session to the share I specified. I setup a Samba server that allows anonymous access and placed a DB file I crafted with credentials I specified during creation. This time I managed to connect and execute SQL statments against my server. What was more interesting, the account permissions and roles were set by the DB file and not by the host, so I could setup in advance in my DB to have an administrator role and then I could execute "xp_cmdshell" on the remote host.</p>
+<ul>
+  <li>
+    <p>Of the 4807 keys 966 were malformed and 1036 were encrypted (20%). Of the 1036 encrypted I could break 88 passwords using dictionaries and an additional 41 passwords using John-the-ripper on a 3-year old 8-core Xeon workstation after a month of brute-forcing.</p>
+  </li>
+  <li>Sizes (all were SHA256):
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@DESKTOP-MR4OQPJ:~/keys# for i in id_rsa* ; do ssh-keygen -l -f $i; done | sed 's/:.*//' | sort | uniq -c | sort -n -k 2
+    2 1023 SHA256
+   37 1024 SHA256
+    1 2047 SHA256
+ 2187 2048 SHA256
+    1 3000 SHA256
+    1 4048 SHA256
+  572 4096 SHA256
+    3 8192 SHA256
+    1 16384 SHA256
+</code></pre></div>    </div>
+    <p>I don’‘t get the wird sizes: 1023-bit, 2047-bit, 3000-bit, and 4048-bit. Anyone have an idea?</p>
+  </li>
+  <li>Encryption type:
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@DESKTOP-MR4OQPJ:~/enc# grep -h DEK-Info id_rsa* | sed 's/,.*//' | sort | uniq -c
+  665 DEK-Info: AES-128-CBC
+    2 DEK-Info: AES-256-CBC
+   94 DEK-Info: DES-EDE3-CBC
+</code></pre></div>    </div>
+    <p>Why still use DES keys?</p>
 
-<p>We tried this in the field using ssh port forwarding back home on 445 and got access to most developer computers.</p>
+    <p>for keys that I could not break:</p>
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  531 DEK-Info: AES-128-CBC
+    2 DEK-Info: AES-256-CBC
+   66 DEK-Info: DES-EDE3-CBC
+</code></pre></div>    </div>
+  </li>
+  <li>Distributions (in 2019, from uname)</li>
+  <li>87 were Ubuntu</li>
+  <li>38 were RHEL/Centos 6</li>
+  <li>25 were RHEL/Centos 7</li>
+  <li>7 were Amazon</li>
+  <li>5 were RHEL/Centos 5</li>
+  <li>2 were Debian</li>
+  <li>2 were CoreOS</li>
+  <li>1 was Gentoo</li>
+  <li>1 was Fedore32</li>
+  <li>2 were armv7l</li>
+  <li>1 was armv5tel</li>
+  <li>
+    <p>the rest I could not identify from uname -a</p>
+  </li>
+  <li>Most common kernels (in 2019, from uname)</li>
+  <li>44 were Linux 2.6.x</li>
+  <li>39 were Linux 4.4.x</li>
+  <li>28 were Linux 4.15.x</li>
+  <li>35 were Linux 3.10.x</li>
+  <li>15 were Linux 3.13.x</li>
+  <li>13 were Linux 4.9.x</li>
+</ul>
 
-<p><img src="/images/sybase.png" alt="Sybase login dialog" /></p>
-
-<p>This was quiet a few years ago, but looking over the CVE DB for Sybase I don't see any issue that sounds like that, so I guess if you encounter Step7 or LabVIEW during a pentest you now know what to do …</p>
+<p>Last week (after two years!) I reran the test against the 221 working keys and 179 still work. To make sure these are not honepots I added to the testing script a checked for the length of the remote .bash_history file, and none seem to be honeypots.</p>
 
 
 
@@ -106,12 +156,9 @@
         <div class="clearfix">
 
           
-          <a class="btn btn-primary float-left" href="/2021/02/04/secure-boot.html" data-toggle="tooltip" data-placement="top" title="In-depth dive into the security features of the Intel/Windows platform secure boot process">&larr; Previous<span class="d-none d-md-inline">
+          <a class="btn btn-primary float-left" href="/2021/02/07/sybase.html" data-toggle="tooltip" data-placement="top" title="Abusing Sybase for lateral movement">&larr; Previous<span class="d-none d-md-inline">
               Post</span></a>
           
-          
-          <a class="btn btn-primary float-right" href="/2021/02/08/ssh-keys-in-the-wild.html" data-toggle="tooltip" data-placement="top" title="Analysis of SSH keys found in the wild">Next<span class="d-none d-md-inline">
-              Post</span> &rarr;</a>
           
 
         </div>
