@@ -189,7 +189,7 @@ At boot, the operating system and kernel mode drive will detect and query the di
 After boot up, display config request will be sent to KMD and KMD in turn will configure the GEN display hardwires
 There are also use cases of display hot-plug during runtime, handled by OS user and kernel mode modules/drivers.
 
-Once the driver is loaded it DirectX initializes it from DxgkDdiStartDevice() which eventually leads to a function that setups the redner table per architecture:
+Once the driver is loaded it DirectX initializes it from DxgkDdiStartDevice() which eventually leads to a function that setups the render table per architecture:
 ```
 void setup_render_function_table(HW_DEVICE_EXTENSION *pHwDevExt)
 {
