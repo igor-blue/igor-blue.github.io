@@ -106,7 +106,7 @@ The GOP supplies two basic functions:
 - Changing the graphics mode - resultion, pixel depth, etc'
 - Getting the physical address of the framebuffer
 
-The Windows boot-loader uses the GOP to setup a memory mapped video framebuffer before entering VBS, and after the hypervisor and SK are loaded the access by winload is only through the framebuffer without invoking the GOP. Windows also uses the GOP for disablig blue screens.
+The Windows boot-loader uses the GOP to setup a memory mapped video framebuffer before entering VBS, and after the hypervisor and SK are loaded the access by winload is only through the framebuffer without invoking the GOP. Windows also uses the GOP for displaying blue screens.
 
 
 ## Windows
