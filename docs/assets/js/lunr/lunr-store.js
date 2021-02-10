@@ -22,4 +22,10 @@ var store = [{
         "tags": [],
         "url": "/2021/02/08/ssh-keys-in-the-wild.html",
         "teaser": null
+      },{
+        "title": "Security of the Intel Graphics Stack - Part 1 - Introduction",
+        "excerpt":"General Architecture Core Graphics 2D Graphics Pipeline 3D Graphics Pipeline The Execution Units (EUs) The GuC Boot ROM and GuC firmware The μOS kernel Communication with the OS Host Graphics Architectue UEFI Windows Basic Memory Managment SVM Mode Cache Coherence Boot process OCA Conclusion I promised I’ll post stuff about...","categories": [],
+        "tags": [],
+        "url": "/2021/02/10/graphics-part1.html",
+        "teaser": null
       }]
