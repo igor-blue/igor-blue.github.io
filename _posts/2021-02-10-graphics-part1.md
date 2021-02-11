@@ -14,8 +14,8 @@ Not all of it is current, as newer hardware is harder to inspect and reverse, bu
 The first post below is a quick introduction to the different components on the hardware and software side we'll need to dive into security issues in the next post.
 
 # General Architecture
-- Processor graphics - The graphics unit that is part of the processor itself. Has had many codenames over the years, HD Graphics, UHD Graphics, Iris, Gen9, Gen11, Intel Xe and so on. Even the 'Gen' name has double meaning - both generation and 'Graphics ENgine'. In UEFI code it is sometimes referet to at the IGD - Integrated Graphics Device.
-- The GuC - an embedded i486 core that supports graphics sechduling, power managment and firmware attestation.
+- Processor graphics - The graphics unit that is part of the processor itself. Has had many codenames over the years, HD Graphics, UHD Graphics, Iris, Gen9, Gen11, Intel Xe and so on. Even the 'Gen' name has double meaning - both generation and 'Graphics ENgine'. In UEFI code it is sometimes refered to at the IGD - Integrated Graphics Device.
+- The GuC - an embedded i486 core that supports graphics scheduling, power management and firmware attestation.
 
 - UEFI and OS Drivers 
 
@@ -25,9 +25,9 @@ As discussed in the introduction to the SecureBoot post, the Intel CPU has four 
 ![Gen9 Architecture](/images/gen9.png)
 
 The graphics process is made up from several *slices* and an *unslice* (like *uncore*) area that includes common components.
-Each slice is divided into subblices and a slice common area. The subslices are made up of several Execution Units (EUs), and Texture unit and a L1 Cache/Memory. The common area includes the L3 cache and the dataport.
+Each slice is divided into subslices and a slice common area. The subslices are made up of several Execution Units (EUs), and Texture unit and a L1 Cache/Memory. The common area includes the L3 cache and the dataport.
 The limit to the number of slices is the interconnect between them and the unslice. 
-There is always only a single *unslice*. In the unslice we can find the connection to the ring bus, aptly named the GT interface (GTI), the *Command Streamer* is reads commands from the system memory and into the graphics processor, the *fixed function pipline* (FF pipeline), and the thread dispatcher \& spawner that lunch shader programs and GPGPU (General Purpose Comuting) programs onto the EUs. The FF pipeline deals with fixed functions such as vertice operations (called the Geometry Pipe), and other dedicated hardware such as video transcoding.
+There is always only a single *unslice*. In the unslice we can find the connection to the ring bus, aptly named the GT interface (GTI), the *Command Streamer* is reads commands from the system memory and into the graphics processor, the *fixed function pipline* (FF pipeline), and the thread dispatcher \& spawner that lunch shader programs and GPGPU (General Purpose Computing) programs onto the EUs. The FF pipeline deals with fixed functions such as vertice operations (called the Geometry Pipe), and other dedicated hardware such as video transcoding.
 
 Different SKUs have different combinations of these. For example:
 - Skylake GT2: 1 slice of 3 subslices of 8 EUs (1x3x8)
@@ -36,14 +36,14 @@ Different SKUs have different combinations of these. For example:
 
 ![Gen9 Architecture](/images/gen9slice.png)
 
-The graphics engine is also connect streight to the the IOSF (Intel On Chip Fabric internal bus, see the [secureboot post]({% post_url 2021-02-04-secure-boot %}) bus, through a controller called Gunit.  Gunit is connect to both the primary and secondary IOSF and exports functions for communicating with the graphics engine and implementing IOMMU support for graphics memory and unified memory.
+The graphics engine is also connect straight to the IOSF (Intel On Chip Fabric internal bus, see the [secureboot post]({% post_url 2021-02-04-secure-boot %}) bus, through a controller called Gunit.  Gunit is connect to both the primary and secondary IOSF and exports functions for communicating with the graphics engine and implementing IOMMU support for graphics memory and unified memory.
 
-All of this is connected to the the display IO interconnect and output to DisplayPort and HDMI outputs.
+All of this is connected to the display IO interconnect and output to DisplayPort and HDMI outputs.
 
 ![Gen9 Architecture](/images/gunit.png)
 
 ## 2D Graphics Pipeline
-The 2D graphics gengine is a standonle IP block in the *unslice* area, and has its own command streamer, registers and cache. It has 256 different operation codes, for example:
+The 2D graphics engine is a standalone IP block in the *unslice* area, and has its own command streamer, registers and cache. It has 256 different operation codes, for example:
 
 ![2D BitBlt Operations](/images/2dops.png)
  
@@ -52,14 +52,14 @@ The fixed function pipeline in the *unslice* implements the DirectX 11 rednderin
 Vertex Fetch -> Vertex Shader -> Hull Shader -> Tessellator -> Domain Shader -> Geometry Shader -> Clipper -> Windower -> Z Ordering, -> Pixel Shader - >Pixel Output. Some of these functions are self contained, but many are implemented using by running shader programs on the EUs in the slices. EUs can send certain operations back into dedicated hardware units.
 
 ## The Execution Units (EUs)
-The EUs are in-order mulithreaded SIMD processing core. Each execution thread is dispatched has its own 128 register space and executed programs called "kernels". All instructions are 8 channels wide, e.g. operate on 8 registers at a time (or 16 half registers). Its supports arithmetic, logical and control flow instructions on floats and ints. Registers are addressed by address.
-The EU thread dispatcher implements priorities based on age, i.e. oldest is hight priority, and whether the trhead is blocked waiting on instruction fetches, register dependencies etc'. C
+The EUs are in-order mulithreaded SIMD processing cores. Each execution thread is dispatched has its own 128 register space and executed programs called "kernels". All instructions are 8 channels wide, e.g. operate on 8 registers at a time (or 16 half registers). Its supports arithmetic, logical and control flow instructions on floats and ints. Registers are addressed by address.
+The EU thread dispatcher implements priorities based on age, i.e. oldest is highest priority, and whether the trhead is blocked waiting on instruction fetches, register dependencies etc'. C
 
 # The GuC
-The GuC is a small embedded core that supports graphics sechduling, power managment and firmware attestation.
-It is implemented in an i486DX4 CPU (also called P24C and Minute IA), altough it seems that since broadwell it has been extended to the Pentium (i586) ISA. It runs a small microkernel call μOS. 
+The GuC is a small embedded core that supports graphics scheduling, power management and firmware attestation.
+It is implemented in an i486DX4 CPU (also called P24C and Minute IA), although it seems that since broadwell it has been extended to the Pentium (i586) ISA. It runs a small microkernel call μOS. 
 The GuC μOS runs only kernel level tasks (even though μOS supports μApps). The firmware is written in C with not stdlib.
-In the GuC we can find supporting blocks: ROM memory, 8KB L1 on core cache, 64KB/128KB/256KB (Broadwell/Skylake/CannonLake) of SRAM  memory which is used for code+data+cache and a 8KB stack. It also has power managment, DMA engine, etc'. 
+In the GuC we can find supporting blocks: ROM memory, 8KB L1 on core cache, 64KB/128KB/256KB (Broadwell/Skylake/CannonLake) of SRAM  memory which is used for code+data+cache and a 8KB stack. It also has power management, DMA engine, etc'. 
 Communication to the GuC is done through memory-mapped IO and bidirectional interrupts.
 
 ![GuC architecture](/images/guc.png)
@@ -70,7 +70,7 @@ Communication between the UMD and the GuC is done through shared memory queues.
 *Why is the GuC interesting? Because I think it can communicate with the CSME, CPU and GPU and everything over the IOSF, and if it has bugs it can be used to gain very privileged access to the system and memory*.
 
 ## Boot ROM and GuC firmware
-At system startup GuC is held at reset state until the UEFI firmware initializes the shared memory regtion for the GPU. Inside the shared region a special subregion call WOPCM is set aside fur GuC (and HuC) firmware. It then releases the GuC from reset and it in turn starts executing a small non-modifiable Boot ROM (16/32KB in size) that initializes the basic GuC hardware, and waits for an interupt signalling the firmware has been copied to the WOPCM region.
+At system startup GuC is held at reset state until the UEFI firmware initializes the shared memory region for the GPU. Inside the shared region a special subregion call WOPCM is set aside fur GuC (and HuC) firmware. It then releases the GuC from reset and it in turn starts executing a small non-modifiable Boot ROM (16/32KB in size) that initializes the basic GuC hardware, and waits for an interrupt signalling the firmware has been copied to the WOPCM region.
 The GuC firmware is an opaque blob supplied by Intel as part of the GPU KMD, which copies it to the shared memory region (GGTT) and signals the Boot ROM with an interrupt. The bootrom verifies the firmware with a digital signature using a SHA256 hash + PKCSv2.1 RSA signature, and if the test passes copies it to SRAM and starts executing.
 
 The GUC firmware can be extracted from the graphics driver and reversed. Screenshot of IDA open on the kabylake GuC:
@@ -81,7 +81,7 @@ The GuC also attest the firmware for the video decoder unit, called *HuC*. The H
 ## The μOS kernel 
 The μOS kernel runs in 32-bit protected mode, with no paging and old-style segments model (CS, DS, etc'). All code run in ring0. The OS handles HW/SW exceptions and crashes, and supplies debugging and logging services.
 
-Interrupts are handled through the local APIC - I found interrupts coming from the IOMMU, power managment, display interfaces, the GPU and the CPU.
+Interrupts are handled through the local APIC - I found interrupts coming from the IOMMU, power management, display interfaces, the GPU and the CPU.
 
 It runs a single process - which initializes the system and then waits for interrupts/events in a loop.
 
@@ -97,16 +97,16 @@ The Windows kernel mode driver supports GuC debugging by setting a registry key:
     GuCLoggingVerbositySelect=0/1/2/3 (low, medium, high, max)
 ```
 
-# Host Graphics Architectue
+# Host Graphics Architecture
 So far we only discussed hardware. The software part of the graphics stack is divided into three levels: UEFI DXE, kernel mode and user mode.
 
 ## UEFI
 Traditionally VGA support was implemented with a legacy Video VBIOS as an PCI option ROM. In UEFI VBIOS was modified into a DXE driver call the *Graphics Output Protocol* (*GOP*), which support basic display for the UEFI setup menu and for the OS bootloader. The GOP is supplied by Intel to the UEFI vendor. 
 The GOP supplies two basic functions:
-- Changing the graphics mode - resultion, pixel depth, etc'
+- Changing the graphics mode - resolution, pixel depth, etc'
 - Getting the physical address of the framebuffer
 
-The Windows boot-loader uses the GOP to setup a memory mapped video framebuffer before entering VBS, and after the hypervisor and SK are loaded the access by winload is only through the framebuffer without invoking the GOP. Windows also uses the GOP for disablig blue screens.
+The Windows boot-loader uses the GOP to setup a memory mapped video framebuffer before entering VBS, and after the hypervisor and SK are loaded the access by winload is only through the framebuffer without invoking the GOP. Windows also uses the GOP for disabling blue screens.
 
 
 ## Windows
@@ -115,13 +115,13 @@ On Windows, Intel supplies a fairly large graphics driver that implements both t
 
 The GPU driver is riddled with telemetry, but I haven't figured out yet how much of it is sent automatically to Intel, altough crashes are sent through OCA - Online Crash Analysis.
 
-## Basic Memory Managment
-A very important job of the graphics drivers (both KMD and UMD) is memory managment (GMM). The Graphics Memory space is the virtual memory allocated to the GPU, and is translated using the system pages tables to the physical RAM. The memory contains stuff lime geometry data, textures, etc'. The GPU hardware used Graphics Page Tables (GTTs) to decode virtual addresses supplied by the software graphics memory space into hardware. The use of MMUs and page tables on both ends (sw \& hw) has three main benefits: virtualization, per-process isolated graphics memory and non-contiguous physical memory for better utilization.
+## Basic Memory Management
+A very important job of the graphics drivers (both KMD and UMD) is memory management (GMM). The Graphics Memory space is the virtual memory allocated to the GPU, and is translated using the system pages tables to the physical RAM. The memory contains stuff lime geometry data, textures, etc'. The GPU hardware used Graphics Page Tables (GTTs) to decode virtual addresses supplied by the software graphics memory space into hardware. The use of MMUs and page tables on both ends (sw \& hw) has three main benefits: virtualization, per-process isolated graphics memory and non-contiguous physical memory for better utilization.
 
 The GTTs come in two variants:
 - Global GTT - a single one level table mapping directly into system pages. It is managed by the HW and configured in UEFI. The UEFI DXE driver maps the GTT into memory and initializes it. It is also called Graphics Stolen Memory (GSM) and Unified Memory Architecture (UMA), not to be confused with CSME's UMA.
 
-- Per-process GTT (PPGTT). This has changed significantly in the Broadwell graphics engine, so we'll discuss only the new architecture. Modern PPGTT is basicaly a mirror of the CPU's paging model with 4 paging levels.
+- Per-process GTT (PPGTT). This has changed significantly in the Broadwell graphics engine, so we'll discuss only the new architecture. Modern PPGTT is basically a mirror of the CPU's paging model with 4 paging levels.
 
 The GMM part of the KMD handles and tracks graphics allocations, manages the GTTs, caching coherence, stolen memory allocation and something I won't go into right now called *swizzling*. The GMM is essential for performance as it allows memory to be setup by the CPU and then accessed by the GPU directly without copying from system memory to GPU memory.
 
@@ -174,7 +174,7 @@ Five levels of SVM are supported.
 ```
 
 ## Cache Coherence
-Both the CPUs and GPUs have a complex memory heirarchy involving many caches. For example:
+Both the CPUs and GPUs have a complex memory hierarchy involving many caches. For example:
 ```
 CPU: L1 Cache -> L2 Cache -------------\ 
                                        |------> *System LLC Cache -> eDRAM -> RAM 
@@ -182,14 +182,14 @@ GPU: Transient Cache -> GPU L3 Cache --/
 ```
 
 GPU memory accesses do not pass through the CPU core's L1+L2 caches, so the GPU implements *snooping* to maintain memory-cache coherency. The GPU basically *sniffs* the traffic on the CPU L1/L2 caches, and invalidates its own cache (I think this is relevant only to BigCore CPUs, and on Atom this is optional and very costly).
-The GPU's transient caches are not snoopable by the CPU and must be explictly flushed. The GPU L3 Cache is snoopable by the CPU on some Intel platforms.
+The GPU's transient caches are not snoopable by the CPU and must be explicitly flushed. The GPU L3 Cache is snoopable by the CPU on some Intel platforms.
 
 ## Boot process
 At boot, the operating system and kernel mode drive will detect and query the display devices, initialize a default display topology. 
 After boot up, display config request will be sent to KMD and KMD in turn will configure the GEN display hardwires
 There are also use cases of display hot-plug during runtime, handled by OS user and kernel mode modules/drivers.
 
-Once the driver is loaded it DirectX initializes it from DxgkDdiStartDevice() which eventually leads to a function that setups the redner table per architecture:
+Once the driver is loaded it DirectX initializes it from DxgkDdiStartDevice() which eventually leads to a function that setups the render table per architecture:
 ```
 void setup_render_function_table(HW_DEVICE_EXTENSION *pHwDevExt)
 {
