@@ -28,4 +28,10 @@ var store = [{
         "tags": [],
         "url": "/2021/02/10/graphics-part1.html",
         "teaser": null
+      },{
+        "title": "Security of the Intel Graphics Stack - Part 2 - FW <-> GuC",
+        "excerpt":"Today we'll continue our voyage into the graphics subsystem components. The question we'll try to answer is what kind of communications occur between the GuC and the rest of the system. In this post we'll look at firmware components and next post at Windows components. For a reminder what the...","categories": [],
+        "tags": [],
+        "url": "/2021/02/24/graphics-part2.html",
+        "teaser": null
       }]
