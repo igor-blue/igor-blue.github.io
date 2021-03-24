@@ -34,4 +34,10 @@ var store = [{
         "tags": [],
         "url": "/2021/02/24/graphics-part2.html",
         "teaser": null
+      },{
+        "title": "APT Encounters of the Third Kind",
+        "excerpt":"A few weeks ago an ordinary security assessment turned into an incident response whirlwind. It was definitely a first for me, and I was kindly granted permission to outline the events in this blog post. I'll be back to posting about my hardware research soon. How it started What hell...","categories": [],
+        "tags": [],
+        "url": "/2021/03/24/apt1.html",
+        "teaser": null
       }]
