@@ -36,7 +36,7 @@ var store = [{
         "teaser": null
       },{
         "title": "APT Encounters of the Third Kind",
-        "excerpt":"A few weeks ago an ordinary security assessment turned into an incident response whirlwind. It was definitely a first for me, and I was kindly granted permission to outline the events in this blog post. I'll be back to posting about my hardware research soon. How it started What hell...","categories": [],
+        "excerpt":"A few weeks ago an ordinary security assessment turned into an incident response whirlwind. It was definitely a first for me, and I was kindly granted permission to outline the events in this blog post. This investigation started scary but turned out be quite fun, and I hope reading it...","categories": [],
         "tags": [],
         "url": "/2021/03/24/apt1.html",
         "teaser": null
